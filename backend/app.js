@@ -1,9 +1,14 @@
 const express = require("express")
 const mongoose = require("mongoose")
 const bodyParser = require("body-parser")
+const ejsMate = require('ejs-mate');
+const path = require('path');
 
 // create out express app
 const app = express()
+app.engine('ejs', ejsMate);
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
 
 // Handle CORS + middleware
 app.use(function (req, res, next) {
@@ -12,17 +17,6 @@ app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Headers", "auth-token, Origin, X-Requested-With, Content-Type, Accept");
   next();
 })
-
-// database stuff
-// const uri = "mongodb+srv://admin:1234@cluster0.8wyap.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
-// mongoose.connect(uri, {
-//   useNewUrlParser: true,
-//   useUnifiedTopology: true
-// })
-//   .then(() => {
-//     console.log("MongoDB connected")
-//   })
-//   .catch(err => console.log(err))
 
 main().catch(err => console.log(err));
 async function main() {
@@ -33,9 +27,9 @@ async function main() {
 app.use(bodyParser.json())
 
 // routes
-app.get("/", (res, req) => {
-  // res.send("yay home page")
+app.get("/", (req, res) => {
   console.log("User get to home page")
+  res.render("home");
 })
 
 const TodosRoute = require('./routes/Todos');
