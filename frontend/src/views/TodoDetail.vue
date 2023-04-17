@@ -4,20 +4,24 @@
 
     <div v-for="item in todo" :key="item._id">
       Author:
-      <h4>{{ item.author }}</h4>
+      <h4 style="border: 1px solid black; background-color: cadetblue">
+        {{ item.author }}
+      </h4>
       Todo Item:
-      <p>{{ item.todo }}</p>
-    </div>
-    <hr />
-    <input type="text" placeholder="Author" v-model="state.newAuthor" />
-    <span> Test: {{ state.newAuthor }} </span>
-    <br />
-    <input type="text" placeholder="Todo" v-model="state.newTodoItem" />
-    <span> Test: {{ state.newTodoItem }} </span>
-    <br />
-    <button @click="editTodo()">Update Item</button>
+      <p style="border: 1px solid black; background-color: cadetblue">
+        {{ item.todo }}
+      </p>
 
-    <hr />
+      <hr />
+      <input type="text" placeholder="Author a" v-model="item.author" />
+      <!-- <span> Edit: {{ item.author }} </span> -->
+      <br />
+      <input type="text" placeholder="Todo a" v-model="item.todo" />
+      <!-- <span> Edit: {{ item.todo }} </span> -->
+      <br />
+      <button @click="editTodo()">Update Item</button>
+      <hr />
+    </div>
   </div>
 </template>
 
