@@ -22,7 +22,6 @@ async function main() {
 }
 main().catch(err => console.log(err));
 
-
 async function insertDocuments() {
     const collection = await main();
     const result = await collection.insertOne(data);
@@ -36,8 +35,6 @@ async function showDocument() {
     console.log(result);
     console.log(result[0].name);
 }
-
-
 
 // insertDocuments();
 showDocument();
