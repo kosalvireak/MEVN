@@ -1,19 +1,32 @@
 
 <script>
 import Papa from "papaparse";
-import axios from "axios";
+
 import { ref } from "vue";
-const dataFromDB = ref("");
+const AllCsv = ref("");
+const OneCsv = ref("");
+const OneCsvId = ref("");
 export default {
   data() {
     return {
       csvData: {},
-      dataFromDB,
+      AllCsv,
+      OneCsv,
+      OneCsvId,
     };
   },
   methods: {
     handleFileChange(event) {
       const file = event.target.files[0];
+      const fileName = event.target.files[0].name;
+      const uploadDate = new Date().toLocaleString("en-GB", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+      console.log(uploadDate);
       Papa.parse(file, {
         header: true,
         complete: (results) => {
@@ -21,11 +34,12 @@ export default {
           const names = results.data.map((item) => item.name);
           const numbers = results.data.map((item) => parseInt(item.number));
           this.csvData = {
-            identify: "data2",
+            fileName,
+            uploadDate,
             names,
             numbers,
           };
-          console.log(this.csvData);
+          // console.log(this.csvData);
         },
       });
     },
@@ -40,22 +54,34 @@ export default {
             data: this.csvData,
           }),
         });
-
         const data = await response.json();
         console.log(data.message);
+        console.log(data.csvId);
+        this.OneCsvId = data.csvId;
       } catch (error) {
         console.error(error);
       }
     },
-    async GetCsv() {
+    async GetAllCsvs() {
       try {
         await fetch("http://localhost:3000/gets")
           .then((res) => res.json())
           .then((data) => {
-            this.dataFromDB = data;
+            this.AllCsv = data;
             // debugger
           });
-        console.log(this.dataFromDB);
+        console.log(this.AllCsv);
+      } catch (error) {
+        console.log(error); // do different error to showcase - line 15 wrong name + line13 with incorrect path
+      }
+    },
+    async GetOneCsv(id) {
+      try {
+        await fetch("http://localhost:3000/gets/" + id)
+          .then((res) => res.json())
+          .then((data) => {
+            this.OneCsv = data;
+          });
       } catch (error) {
         console.log(error); // do different error to showcase - line 15 wrong name + line13 with incorrect path
       }
@@ -68,15 +94,30 @@ export default {
     <input type="file" ref="csvFileInput" @change="handleFileChange" />
     <button type="submit">Upload</button>
   </form>
-  <button @click="GetCsv">GetCsv</button>
+
+  <button @click="GetOneCsv(OneCsvId)">GetOneCsvs</button>
+  <div
+    v-if="OneCsv"
+    style="
+      background-color: aquamarine;
+      width: fit-content;
+      height: fit-content;
+    "
+  >
+    <h1>{{ OneCsv.fileName }}</h1>
+    <h3>{{ OneCsv.uploadDate }}</h3>
+    <p>{{ OneCsv.names }}</p>
+    <p>{{ OneCsv.numbers }}</p>
+  </div>
+  <button @click="GetAllCsvs">GetAllCsvs</button>
   <div style="background-color: aquamarine; width: 700px; height: fit-content">
-    <p>{{ dataFromDB }}</p>
     <div
-      v-for="data in dataFromDB"
+      v-for="data in AllCsv"
       :key="data._id"
       style="background-color: bisque"
     >
-      <h1>{{ data.identify }}</h1>
+      <h1>{{ data.fileName }}</h1>
+      <h3>{{ data.uploadDate }}</h3>
       <p>{{ data.names }}</p>
       <p>{{ data.numbers }}</p>
     </div>
