@@ -43,6 +43,17 @@ export default {
         },
       });
     },
+    async GetOneCsv(id) {
+      try {
+        await fetch("http://localhost:3000/gets/" + id)
+          .then((res) => res.json())
+          .then((data) => {
+            this.OneCsv = data;
+          });
+      } catch (error) {
+        console.log(error); // do different error to showcase - line 15 wrong name + line13 with incorrect path
+      }
+    },
     async handleSubmit() {
       try {
         const response = await fetch("http://localhost:3000/upload", {
@@ -58,6 +69,7 @@ export default {
         console.log(data.message);
         console.log(data.csvId);
         this.OneCsvId = data.csvId;
+        this.GetOneCsv(this.OneCsvId);
       } catch (error) {
         console.error(error);
       }
@@ -75,17 +87,6 @@ export default {
         console.log(error); // do different error to showcase - line 15 wrong name + line13 with incorrect path
       }
     },
-    async GetOneCsv(id) {
-      try {
-        await fetch("http://localhost:3000/gets/" + id)
-          .then((res) => res.json())
-          .then((data) => {
-            this.OneCsv = data;
-          });
-      } catch (error) {
-        console.log(error); // do different error to showcase - line 15 wrong name + line13 with incorrect path
-      }
-    },
   },
 };
 </script>
@@ -95,7 +96,6 @@ export default {
     <button type="submit">Upload</button>
   </form>
 
-  <button @click="GetOneCsv(OneCsvId)">GetOneCsvs</button>
   <div
     v-if="OneCsv"
     style="
