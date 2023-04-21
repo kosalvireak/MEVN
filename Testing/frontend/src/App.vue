@@ -1,11 +1,12 @@
 
 <script>
 import Papa from "papaparse";
-
+import LineChartWrapper from "./components/Charts/LineChartWrapper.vue";
 import { ref } from "vue";
 const AllCsv = ref("");
 const OneCsv = ref("");
 const OneCsvId = ref("");
+let lineChartData = ref("");
 export default {
   data() {
     return {
@@ -13,9 +14,27 @@ export default {
       AllCsv,
       OneCsv,
       OneCsvId,
+      lineChartData,
     };
   },
+  components: {
+    LineChartWrapper,
+  },
   methods: {
+    getLineChartData(OneCsv) {
+      const tempLabel = OneCsv.names;
+      const tempData = OneCsv.numbers;
+      lineChartData.value = {
+        labels: tempLabel,
+        datasets: [
+          {
+            label: "Monthly Progress",
+            backgroundColor: "#f87979",
+            data: tempData,
+          },
+        ],
+      };
+    },
     handleFileChange(event) {
       const file = event.target.files[0];
       const fileName = event.target.files[0].name;
@@ -26,20 +45,20 @@ export default {
         hour: "2-digit",
         minute: "2-digit",
       });
-      console.log(uploadDate);
       Papa.parse(file, {
         header: true,
         complete: (results) => {
-          // console.log("results.data", results.data);
           const names = results.data.map((item) => item.name);
           const numbers = results.data.map((item) => parseInt(item.number));
+          names.pop();
+          numbers.pop();
           this.csvData = {
             fileName,
             uploadDate,
             names,
             numbers,
           };
-          // console.log(this.csvData);
+          this.getLineChartData(this.csvData);
         },
       });
     },
@@ -66,8 +85,6 @@ export default {
           }),
         });
         const data = await response.json();
-        console.log(data.message);
-        console.log(data.csvId);
         this.OneCsvId = data.csvId;
         this.GetOneCsv(this.OneCsvId);
       } catch (error) {
@@ -108,7 +125,11 @@ export default {
     <h3>{{ OneCsv.uploadDate }}</h3>
     <p>{{ OneCsv.names }}</p>
     <p>{{ OneCsv.numbers }}</p>
+    <div>
+      <LineChartWrapper :data="lineChartData" />
+    </div>
   </div>
+
   <button @click="GetAllCsvs">GetAllCsvs</button>
   <div style="background-color: aquamarine; width: 700px; height: fit-content">
     <div
