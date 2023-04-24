@@ -35,10 +35,6 @@ router.put('/update/:id', async (req, res) => {
     { _id: req.params.id },
 
     { $set: req.body }
-    /*  {
-       author: "Bart",
-       todo: "Skating"
-     } */
   )
   res.json(tUpdate)
 })

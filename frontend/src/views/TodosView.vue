@@ -19,7 +19,7 @@
         <p>
           {{ todo.todo }}
         </p>
-        <button @click="editTodo(todo._id)">Edit todo</button>
+        <!-- <button @click="editTodo(todo._id)">Edit todo</button> -->
       </router-link>
       <button
         @click="
