@@ -1,6 +1,5 @@
 <template>
   <h1>This is DashBoard that show all object in DB</h1>
-
   <div class="row">
     <div class="container">
       <form @submit.prevent="handleSubmit()">
@@ -20,17 +19,22 @@
           @click="$forceUpdate()"
           :disabled="!state.csvTitle"
         >
-          Upload
-        </button>
+          Upload</button
+        ><br />
+        <div style="background-color: darkolivegreen">
+          {{ state.newCsv }}
+        </div>
       </form>
     </div>
     <div v-for="csv in state.csvs" :key="csv._id" class="container">
-      <h3>{{ csv.Title }}</h3>
-      <h3>{{ csv.fileName }}</h3>
-      <p>{{ csv.uploadDate }}</p>
-      <h4>{{ csv.names }}</h4>
-      <h4>{{ csv.numbers }}</h4>
-      <button @click="editCsv(csv._id)">Edit Csv {{ csv._id }}</button>
+      <router-link :to="`/dashboard/${csv._id}`">
+        <h3>Title: {{ csv.Title }}</h3>
+        <h3>{{ csv.fileName }}</h3>
+        <p>{{ csv.uploadDate }}</p>
+        <h4>{{ csv.names }}</h4>
+        <h4>{{ csv.numbers }}</h4>
+        <button @click="editCsv(csv._id)">Edit Csv {{ csv._id }}</button>
+      </router-link>
       <button
         @click="
           deleteCsv(csv._id);
@@ -46,6 +50,7 @@
 <script>
 import { onMounted } from "vue";
 import csvcrud from "../modules/csvcrud.js";
+// import { json } from "express/lib/response";
 
 export default {
   setup() {

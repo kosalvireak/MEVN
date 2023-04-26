@@ -14,7 +14,6 @@ router.get('/', async (req, res) => {
 
 router.post('/new', async (req, res) => {
     const dataFromUserUpload = req.body.data;
-
     if (!dataFromUserUpload) {
         console.log("File not found")
     }

@@ -1,9 +1,15 @@
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import Papa from "papaparse";
-
+import { useRoute } from 'vue-router'
 const getCsvs = () => {
+
+    const route = useRoute();
+    // const router = useRoute();
+
+    const csvId = computed(() => route.params.id)
+    console.log("csvId", csvId)
     const state = ref({
-        csvTitle: '',
+        csvTitle: ' ',
         newCsv: {},
         csvs: {}
     })
@@ -61,7 +67,10 @@ const getCsvs = () => {
                 data: state.value.newCsv
             })
         }
-        fetch("http://localhost:3000/csv/new", requestOptions)
+        const response = await fetch("http://localhost:3000/csv/new", requestOptions)
+        const data = await response.json();
+        console.log(data.message);
+        GetAllCsvs();
     }
     const deleteCsv = (_id) => {
         fetch("http://localhost:3000/csv/delete/" + _id, { method: "DELETE" })
@@ -73,10 +82,27 @@ const getCsvs = () => {
         }
         fetch("http://localhost:3000/csv/update/" + _id, requestOptions)
             .then(res => res.body)
-            .then(res => { console.log(res) })
+            .then(res => {
+                GetAllCsvs();
+                console.log(res)
+            })
+    }
+    const csv = ref({})
+    const GetSpecificCsv = async () => {
+        try {
+            fetch("http://localhost:3000/csv")
+                .then(res => res.json())
+                .then(data => {
+                    csv.value = data.filter(t => t._id === csvId.value)
+                    console.log(csv)
+                })
+        } catch (error) { console.log(error) }
     }
 
     return {
+        csv,
+        csvId,
+        GetSpecificCsv,
         state,
         GetAllCsvs,
         handleFileChange,
