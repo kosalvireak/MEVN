@@ -7,11 +7,16 @@ const app = express();
 app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE");
-    res.header("Access-Control-Allow-Headers", "Content-Type");
+    res.header("Access-Control-Allow-Headers", "auth-token, Origin, X-Requested-With, Content-Type, Accept");
     next();
 });
 app.use('/csv', CsvsRoute);
-app.use(bodyParser.json());
+app.use(bodyParser.json())
+
+app.listen(3000, () => {
+    console.log("Listening at port 3000")
+})
+
 // let myCollection;
 // async function main() {
 //     const client = await MongoClient.connect('mongodb://127.0.0.1:27017', {
@@ -25,7 +30,7 @@ app.use(bodyParser.json());
 // }
 // main().catch(err => console.log(err));
 
-// app.post('/upload', async (req, res) => {
+// app.post('/new', async (req, res) => {
 //     const dataFromUserUpload = req.body.data;
 //     const { fileName, uploadDate } = dataFromUserUpload;
 //     const collection = await main();
@@ -57,6 +62,3 @@ app.use(bodyParser.json());
 
 
 
-app.listen(3000, () => {
-    console.log("Listening at port 3000")
-})
