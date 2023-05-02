@@ -1,7 +1,7 @@
 
 <script>
 import Papa from "papaparse";
-import LineChartWrapper from "./components/Charts/LineChartWrapper.vue";
+// import LineChartWrapper from "./components/Charts/LineChartWrapper.vue";
 import { ref } from "vue";
 const AllCsv = ref("");
 const OneCsv = ref("");

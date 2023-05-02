@@ -1,4 +1,4 @@
-import { ref, computed } from 'vue'
+import { ref, computed, reactive } from 'vue'
 import Papa from "papaparse";
 import { useRoute } from 'vue-router'
 const getCsvs = () => {
@@ -7,12 +7,25 @@ const getCsvs = () => {
     // const router = useRoute();
 
     const csvId = computed(() => route.params.id)
-    console.log("csvId", csvId)
+    // console.log("csvId", csvId)
+    const csv = ref({})
+    const lineChartData = reactive({
+        labels: [],
+        datasets: [
+            {
+                label: "",
+                backgroundColor: "#f87979",
+                data: [],
+            },
+        ],
+    })
     const state = ref({
         csvTitle: ' ',
         newCsv: {},
-        csvs: {}
+        csvs: {},
     })
+
+
     const GetAllCsvs = async () => {
         try {
             await fetch("http://localhost:3000/csv")
@@ -20,7 +33,7 @@ const getCsvs = () => {
                 .then((data) => {
                     state.value.csvs = data;
                 })
-            console.log("state", state);
+            // console.log("state", state);
         } catch (error) {
             console.log(error);
         }
@@ -52,7 +65,6 @@ const getCsvs = () => {
                     numbers,
                 };
                 console.log(state.value.newCsv);
-                // this.getLineChartData(this.csvData);
             },
         });
     }
@@ -87,22 +99,47 @@ const getCsvs = () => {
                 console.log(res)
             })
     }
-    const csv = ref({})
+
     const GetSpecificCsv = async () => {
         try {
             fetch("http://localhost:3000/csv")
                 .then(res => res.json())
                 .then(data => {
                     csv.value = data.filter(t => t._id === csvId.value)
-                    console.log(csv)
+                    // console.log("csv", csv)
+                    // getLineChartData();
                 })
         } catch (error) { console.log(error) }
+    }
+    const getLineChartData = async (OneCsv) => {
+        const labels = OneCsv.names;
+        const data = OneCsv.numbers;
+        const title = OneCsv.Title;
+        lineChartData.datasets[0].label = title;
+        lineChartData.labels = labels;
+        lineChartData.datasets[0].data = data;
+        // console.log("lineChartData", lineChartData);
+    }
+    const GetSpecificCsvById = async (id) => {
+        try {
+            const response = await fetch("http://localhost:3000/csv/get/" + id);
+            if (!response.ok) {
+                throw new Error('CSV not found');
+            }
+            csv.value = await response.json();
+            console.log("csv", csv.value);
+        } catch (error) {
+            console.error(error.message);
+            throw error;
+        }
     }
 
     return {
         csv,
         csvId,
         GetSpecificCsv,
+        GetSpecificCsvById,
+        lineChartData,
         state,
         GetAllCsvs,
         handleFileChange,
